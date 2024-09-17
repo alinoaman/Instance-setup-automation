@@ -22,13 +22,6 @@ sudo apt install software-properties-common -y
 sudo apt-add-repository --yes --update ppa:ansible/ansible
 sudo apt install ansible -y
 
-# Create a directory for your project
-mkdir -p ~/my_project
-cd ~/my_project
-
-# Clone your GitHub repository (replace with your actual repository URL)
-git clone https://github.com/alinoaman/Instance-setup-automation.git
-
 echo "Setup complete! Jenkins, Git, and Ansible have been installed."
 echo "Jenkins initial admin password:"
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
