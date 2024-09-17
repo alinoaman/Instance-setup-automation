@@ -27,7 +27,7 @@ mkdir -p ~/my_project
 cd ~/my_project
 
 # Clone your GitHub repository (replace with your actual repository URL)
-git clone https://github.com/yourusername/your-repo.git
+git clone https://github.com/alinoaman/Instance-setup-automation.git
 
 echo "Setup complete! Jenkins, Git, and Ansible have been installed."
 echo "Jenkins initial admin password:"
