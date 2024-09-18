@@ -1,0 +1,99 @@
+---
+- name: Setup AWS Instance
+  hosts: all
+  become: yes
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Git
+      apt:
+        name: git
+        state: present
+
+    - name: Install Python
+      apt:
+        name: python3
+        state: present
+
+    - name: Install pip
+      apt:
+        name: python3-pip
+        state: present
+
+    - name: Install Ansible
+      apt:
+        name: ansible
+        state: present
+
+    # Jenkins installation and configuration
+    - name: Install Java (required for Jenkins)
+      apt:
+        name: openjdk-11-jdk
+        state: present
+
+    - name: Add Jenkins apt repository key
+      apt_key:
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+        state: present
+
+    - name: Add Jenkins apt repository
+      apt_repository:
+        repo: deb https://pkg.jenkins.io/debian-stable binary/
+        state: present
+
+    - name: Install Jenkins
+      apt:
+        name: jenkins
+        state: present
+        update_cache: yes
+
+    - name: Start Jenkins service
+      systemd:
+        name: jenkins
+        state: started
+
+    - name: Enable Jenkins to start on boot
+      systemd:
+        name: jenkins
+        enabled: yes
+
+    - name: Get Jenkins status
+      command: systemctl status jenkins
+      register: jenkins_status
+      changed_when: false
+
+    - name: Display Jenkins status
+      debug:
+        var: jenkins_status.stdout_lines
+
+    - name: Wait for Jenkins to start up
+      uri:
+        url: "http://localhost:8080"
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 10
+      delay: 5
+      ignore_errors: yes
+
+    - name: Check if Jenkins is accessible
+      command: curl -s -I http://localhost:8080
+      register: curl_result
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Display curl result
+      debug:
+        var: curl_result
+
+    - name: Get initial Jenkins admin password
+      command: cat /var/lib/jenkins/secrets/initialAdminPassword
+      register: jenkins_password
+      changed_when: false
+
+    - name: Display Jenkins initial admin password
+      debug:
+        var: jenkins_password.stdout
+
